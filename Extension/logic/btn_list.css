@@ -1,0 +1,41 @@
+.main-list-continer {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+input[type="text"].task-todo-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #333;
+}
+
+.list-head {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 40px;
+    opacity: 0.5;
+}
+
+
+#task-list-container {
+    display: flex;
+    flex-direction: column;
+}
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+}
+.task-item.done .text-task{
+    text-decoration: line-through;
+}
+.left-side-task {
+    display: flex;
+    align-items: center;
+}
+.right-side-task span {
+    cursor: pointer;
+}
