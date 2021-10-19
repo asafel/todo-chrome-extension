@@ -1,15 +1,5 @@
-let taskData = [
-    {
-        text: 'Task test 1',
-        completed: false,
-        id: 1
-    },
-    {
-        text: 'Task test 2',
-        completed: true,
-        id: 2
-    }
-]
+const serverUrl = 'http://localhost:3000';
+let taskData;
 
 const renderTasks = () => {
     const list = document.querySelector('#task-list-container');
@@ -24,30 +14,69 @@ const renderTasks = () => {
 };
 
 const addNewTask = (text) => {
-    taskData.push({
+    const newTask = {
         text,
         completed: false,
         id: Date.now()
+    };
+
+    fetch(serverUrl, {
+        method: 'POST',
+        body: JSON.stringify(newTask),
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
-    renderTasks();
+        .then(() => {
+            taskData.push(newTask)
+            renderTasks();
+        })
+        .catch((err) => {
+            console.log('Could not create task', err);
+        })
 }
 
 const deleteTask = (taskId) => {
-    taskData = taskData.filter((task) => task.id !== taskId);
-    renderTasks();
+    fetch(serverUrl, {
+        method: 'DELETE',
+        body: JSON.stringify({ taskId }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(() => {
+            taskData = taskData.filter((task) => task.id !== taskId);
+            renderTasks();
+        })
+        .catch((err) => {
+            console.log('Could not delete task', err);
+        })
 };
 
 const updateTask = (taskId, newText) => {
     // TODO: create update text logic
 };
 
-const completeTask = (taskId) => {
-    const index = taskData.findIndex(task => task.id === taskId)
+const completeTask = (task) => {
+    const index = taskData.findIndex(data => data.id === task.id)
     if (index === -1) {
         return;
     }
-    taskData[index].completed = !taskData[index].completed;
-    renderTasks();
+    const newTask = { ...task, completed: !taskData[index].completed };
+    fetch(serverUrl, {
+        method: 'PUT',
+        body: JSON.stringify(newTask),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(() => {
+            taskData[index].completed = !taskData[index].completed;
+            renderTasks();
+        })
+        .catch((err) => {
+            console.log('Could not update task', err);
+        })
 };
 
 // This function creates a new task element for appending it to the list of tasks
@@ -62,16 +91,14 @@ const getTaskElement = (task) => {
     const leftNode = document.createElement('div');
     leftNode.className = 'left-side-task';
 
-    const checked = document.createElement('span');
-    checked.className = 'material-icons';
-    checked.style = 'cursor: pointer';
-    checked.innerHTML = completed ? 'radio_button_checked' : 'radio_button_unchecked';
-    checked.addEventListener('click', () => {
-        console.log('completing! id: ', id)
-        completeTask(id);
-    })
-    leftNode.appendChild(checked);
+    const completedCircle = document.createElement('span');
+    completedCircle.className = 'material-icons';
+    completedCircle.style = 'cursor: pointer';
+    completedCircle.innerHTML = completed ? 'radio_button_checked' : 'radio_button_unchecked';
+    completedCircle.addEventListener('click', () => completeTask(task));
+    leftNode.appendChild(completedCircle);
 
+    // TODO: Update the text span to be a text input for updting it later (static at the moment)
     const textSpan = document.createElement('span');
     textSpan.style = 'margin-left: 10px';
     textSpan.className = 'text-task';
@@ -88,18 +115,20 @@ const getTaskElement = (task) => {
     deleteIcon.className = 'material-icons';
     deleteIcon.style = 'cursor: pointer';
     deleteIcon.innerHTML = 'delete';
-    deleteIcon.addEventListener('click', () => {
-        console.log('deleting! id: ', id)
-        deleteTask(id);
-    })
+    deleteIcon.addEventListener('click', () => deleteTask(id))
 
+    const editIcon = document.createElement('span');
+    editIcon.className = 'material-icons';
+    editIcon.style = 'cursor: pointer';
+    editIcon.innerHTML = 'edit';
+    editIcon.addEventListener('click', () => console.log('editing! id: ', id));
+
+    rightNode.appendChild(editIcon);
     rightNode.appendChild(deleteIcon);
     node.appendChild(rightNode);
 
     return node;
 }
-
-renderTasks();
 
 // Add task event:
 const form = document.querySelector('.task-form');
@@ -113,6 +142,18 @@ form.addEventListener('submit', (event) => {
         input.value = '';
         input.focus();
     }
-
-    console.log(taskData);
 });
+
+const getTaskDataFromServer = () => {
+    fetch(serverUrl)
+        .then(res => res.json())
+        .then((data) => {
+            taskData = data;
+            renderTasks();
+        })
+        .catch((error) => {
+            console.error('Error getting data from server:', error);
+        })
+};
+
+getTaskDataFromServer();
