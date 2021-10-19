@@ -1,5 +1,5 @@
 const serverUrl = 'http://localhost:3000';
-let taskData;
+let taskData = [];
 
 const renderTasks = () => {
     const list = document.querySelector('#task-list-container');
@@ -10,7 +10,7 @@ const renderTasks = () => {
         .forEach((task) => {
             const node = getTaskElement(task);
             list.append(node);
-        })
+        });
 };
 
 const addNewTask = (text) => {
@@ -76,7 +76,7 @@ const completeTask = (task) => {
         })
         .catch((err) => {
             console.log('Could not update task', err);
-        })
+        });
 };
 
 // This function creates a new task element for appending it to the list of tasks
@@ -152,7 +152,7 @@ const getTaskDataFromServer = () => {
             renderTasks();
         })
         .catch((error) => {
-            console.error('Error getting data from server:', error);
+            console.log('Error getting data from server:', error);
         })
 };
 

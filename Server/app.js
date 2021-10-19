@@ -1,10 +1,8 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const indexRouter = require('./routes/index');
 
-var indexRouter = require('./routes/index');
-
-var app = express();
+const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -12,7 +10,7 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 
 app.listen(3000, function () {
-    console.log('Example app listening on port ' + 3000 + '!');
+    console.log('Task app listening on port ' + 3000 + '!');
 });
 
 module.exports = app;
