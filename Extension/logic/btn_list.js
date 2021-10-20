@@ -54,7 +54,25 @@ const deleteTask = (taskId) => {
 };
 
 const updateTask = (taskId, newText) => {
-    // TODO: create update text logic
+    const index = taskData.findIndex(data => data.id === taskId)
+    if (index === -1) {
+        return renderTasks();
+    }
+    const newTask = { ...taskData[index], text: newText };
+    fetch(serverUrl, {
+        method: 'PUT',
+        body: JSON.stringify(newTask),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(() => {
+            taskData[index].text = newText;
+            renderTasks();
+        })
+        .catch((err) => {
+            console.log('Could not update task text', err);
+        });
 };
 
 const completeTask = (task) => {
@@ -75,7 +93,7 @@ const completeTask = (task) => {
             renderTasks();
         })
         .catch((err) => {
-            console.log('Could not update task', err);
+            console.log('Could not update task completion', err);
         });
 };
 
@@ -87,27 +105,41 @@ const getTaskElement = (task) => {
     node.setAttribute('class', `task-item ${completed ? 'done' : ''}`);
     node.setAttribute('data-key', id);
 
-    // complete task side part
+    // Complete & Input text task side part
     const leftNode = document.createElement('div');
     leftNode.className = 'left-side-task';
 
     const completedCircle = document.createElement('span');
     completedCircle.className = 'material-icons';
     completedCircle.style = 'cursor: pointer';
-    completedCircle.innerHTML = completed ? 'radio_button_checked' : 'radio_button_unchecked';
+    completedCircle.innerHTML = completed ? 'check_box' : 'check_box_outline_blank';
     completedCircle.addEventListener('click', () => completeTask(task));
     leftNode.appendChild(completedCircle);
 
-    // TODO: Update the text span to be a text input for updting it later (static at the moment)
-    const textSpan = document.createElement('span');
-    textSpan.style = 'margin-left: 10px';
-    textSpan.className = 'text-task';
-    textSpan.innerHTML = text;
-    leftNode.appendChild(textSpan);
+    const textForm = document.createElement('form');
+    textForm.className = 'text-task-form';
+    textForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const text = textFormInput.value.trim();
+        if (text !== '') {
+            updateTask(task.id, text);
+        } else {
+            renderTasks();
+        }
+    });
 
+    const textFormInput = document.createElement('input');
+    textFormInput.className = 'text-task-form-input';
+    textFormInput.type = 'text';
+    textFormInput.setAttribute('readonly', true);
+    textFormInput.setAttribute('maxlength', 40);
+    textFormInput.value = text;
+
+    textForm.appendChild(textFormInput);
+    leftNode.appendChild(textForm);
     node.appendChild(leftNode);
 
-    // Delete task side part
+    // Delete & Edit task side part
     const rightNode = document.createElement('div');
     rightNode.className = 'right-side-task';
 
@@ -121,7 +153,15 @@ const getTaskElement = (task) => {
     editIcon.className = 'material-icons';
     editIcon.style = 'cursor: pointer';
     editIcon.innerHTML = 'edit';
-    editIcon.addEventListener('click', () => console.log('editing! id: ', id));
+    editIcon.addEventListener('click', () => {
+        textFormInput.removeAttribute('readonly');
+        if (textFormInput.className.includes('edit-on')) {
+            renderTasks();
+        } else {
+            textFormInput.className = 'text-task-form-input edit-on';
+            textFormInput.focus();
+        }
+    });
 
     rightNode.appendChild(editIcon);
     rightNode.appendChild(deleteIcon);

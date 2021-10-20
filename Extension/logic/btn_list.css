@@ -9,13 +9,40 @@ input[type="text"].task-todo-input {
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #333;
+    outline-width: 0;
+}
+
+.task-form {
+    width: 94%;
+    margin-bottom: 15px;
+}
+
+.text-task-form {
+    width: 270px;
+}
+
+input[type="text"].text-task-form-input {
+    width: 100%;
+    padding: 6px;
+    margin-left: 5px;
+    border-radius: 4px;
+    outline-width: 0;
+    border: none;
+}
+
+input[type="text"].text-task-form-input.edit-on {
+    border: 1px solid #b2b2b2;
 }
 
 .list-head {
     text-align: center;
     margin-bottom: 20px;
-    font-size: 40px;
+    font-size: 35px;
     opacity: 0.5;
+}
+
+.list-head span {
+    color:#4285f4;
 }
 
 
@@ -29,9 +56,11 @@ input[type="text"].task-todo-input {
     justify-content: space-between;
     height: 50px;
 }
-.task-item.done .text-task{
+
+.task-item.done .text-task-form-input{
     text-decoration: line-through;
 }
+
 .left-side-task {
     display: flex;
     align-items: center;

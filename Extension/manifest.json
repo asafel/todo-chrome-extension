@@ -1,6 +1,6 @@
 {
     "name": "Assignment 3",
-    "description": "List extention",
+    "description": "List extension",
     "version": "1.0",
     "manifest_version": 2,
     "background": {
@@ -11,14 +11,7 @@
     "icons": {
         "16": "icon_top.png"
     },
-    "permissions": [
-        "webRequest",
-        "webRequestBlocking",
-        "tabs",
-        "storage",
-        "http://*/*",
-        "https://*/*"
-    ],
+    "permissions": [],
     "web_accessible_resources": [
         "/logic/*"
     ],

@@ -1,7 +1,5 @@
 
 const { Sequelize } = require('sequelize');
-
-
 const sequelize = new Sequelize('mysql://root:mpp25xx4@localhost:3306/mysql');
 
 try {
@@ -12,7 +10,7 @@ try {
     exit(1);
 }
 
-// Task table
+// Tasks table
 const Tasks = sequelize.define('tasks', { 
     id: {
         type: Sequelize.BIGINT,
